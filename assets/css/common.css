@@ -75,6 +75,17 @@ html {
         display: block;
     }
 
+    .row {
+        margin: 0px;
+    }
+    .image-tests {
+        padding: 0px;
+    }
+
+    .description-top {
+        padding: 0px;
+    }
+
     #querying,
     #indexing,
     #textInfoText {

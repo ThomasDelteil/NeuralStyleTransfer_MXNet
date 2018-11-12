@@ -70,10 +70,26 @@
         </form>
 
 
-        <div class="description" ng-if="result"  style="text-align:center;">
-            <img style="height: 425px; width: 425px; max-width: 100%;" src="{{result}}"><br>
-            <img width=40px; height=40px; ng-style="{'visibility': showSpinner ? 'visible' : 'hidden'}" src="assets/images/spinner.gif">
+        <div class="description description-top" ng-if="result"  style="text-align:center;">
+            <div class="row">
+                <div class="col-xs-9 col-lg-10 section">
+                    <img class="display-image" src="{{result}}"><br>
+                </div>
+                <div class="col-xs-3 col-lg-2 section">
+                    <div class="col-xs-12 col-lg-12 section">
+                        <span style="margin-left:10px"><i>style target</i></span>
+
+                    </div>
+                    <div class="col-xs-12 col-lg-12 image-tests" ng-repeat="img in style_images">
+                        <img width="100%" ng-class="img.name == current_style ? 'selected-style' : ''" ng-click="selectStyle(img.name)" ng-src="{{img.url}}">
+                    </div>
+                    <div class="col-xs-12">
+                        <img width=40px; height=40px; ng-style="{'visibility': showSpinner ? 'visible' : 'hidden'}" src="assets/images/spinner.gif">
+                    </div>
+                </div>
+            </div>
             <p style="color:red; margin-top:0px" ng-if="errorMessage">{{errorMessage}}</p>
+
         </div>
 
         <div class="description" style="margin-top: 5px;">
@@ -81,22 +97,15 @@
                 <b>Pick a content and a style:</b>
             </p>
             <div class="row" style="margin:5px">
-                <div class="col-xs-8 col-lg-9 section">
+                <div class="col-xs-12 col-lg-12 section">
                     <span><i>content picture</i></span>
-                </div>
-                <div class="col-xs-4 col-lg-3 section">
-                    <span style="margin-left:10px"><i>style target</i></span>
                 </div>
             </div>
             <div class="row" style="margin:0px">
-                <div class="col-xs-8 col-lg-9 section" style="border-right: 2px black solid">
-                    <img class="col-xs-6 col-lg-4 image-tests" ng-click="updateImage(img.url)" ng-src="{{img.url}}" ng-repeat="img in content_images">
+                <div class="col-xs-12 col-lg-12 section">
+                    <img class="col-xs-4 col-lg-2 image-tests" ng-click="updateImage(img.url)" ng-src="{{img.url}}" ng-repeat="img in content_images">
                 </div>
-                <div class="col-xs-4 col-lg-3 section">
-                    <div class="col-xs-12 col-lg-12 image-tests" ng-repeat="img in style_images">
-                        <img width="100%" ng-class="img.name == current_style ? 'selected-style' : ''" ng-click="selectStyle(img.name)" ng-src="{{img.url}}">
-                    </div>
-                </div>
+
             </div>
 
             <p>
