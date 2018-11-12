@@ -1,0 +1,219 @@
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Facial Emotion Recognition MXNet</title>
+    <link rel="icon" type="image/png" href="assets/images/robot_small.png">
+    <link rel="stylesheet" type="text/css" href="assets/css/ui-cropper.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.8/angular-material.css" rel="stylesheet" />
+    <link href="https://material.angularjs.org/1.1.8/docs.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-messages.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
+    <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.8/angular-material.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="assets/js/ng-file-upload.min.js"></script>
+    <script src="assets/js/ng-file-upload-shim.min.js"></script>
+    <script src="assets/js/ui-cropper.js"></script>
+    <script src="assets/js/script.js"></script>
+
+    <meta property="og:title" content="Neural Style Transfer with MXNet" />
+    <meta property="og:type" content="article" />
+    <meta property="og:description" content="Transfer the style of the grand masters to your own photos, try out Starry Night from "/>
+    <meta property="og:url" content="https://thomasdelteil.github.io/NeuralStyleTransfer_MXNet/" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/ThomasDelteil/NeuralStyleTransfer_MXNet/master/images/robot.png" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118968561-4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-118968561-4');
+    </script>
+
+</head>
+
+<body>
+    <div class="header">
+        <h1>
+            <img id="main_logo" src="assets/images/robot.png">Neural Style Transfer with
+            <a href="http://www.mxnet.io"><img id="logo_header" src="assets/images/mxnet_white.png"></a>
+        </h1>
+    </div>
+    <div ng-app="fileUpload" mat-app-background basic-container id="appContainer" ng-controller="fileController">
+        <form id="myForm" name="myForm">
+            <div ngf-drop ngf-drag="drag($isDragging, $class, $event)" id="dropArea" ng-model="picFile" ngf-pattern="image/jpeg" class="cropArea">
+                <div id="textInfo" class="centered">
+                    <span id="textInfoText">Drop picture or upload</span>
+                    <span id="textInfoText_mobile">Upload a picture &rarr;</span>
+                    <div ngf-select ng-model="picFile" ngf-capture="'camera'" accept="image/jpeg">
+                        <svg id="uploadIcon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve">
+                            <path d="M50,40c-8.285,0-15,6.718-15,15c0,8.285,6.715,15,15,15c8.283,0,15-6.715,15-15,C65,46.718,58.283,40,50,40z M90,25H78c-1.65,0-3.428-1.28-3.949-2.846l-3.102-9.309C70.426,11.28,68.65,10,67,10H33,c-1.65,0-3.428,1.28-3.949,2.846l-3.102,9.309C25.426,23.72,23.65,25,22,25H10C4.5,25,0,29.5,0,35v45c0,5.5,4.5,10,10,10h80,c5.5,0,10-4.5,10-10V35C100,29.5,95.5,25,90,25z M50,80c-13.807,0-25-11.193-25-25c0-13.806,11.193-25,25-25,c13.805,0,25,11.194,25,25C75,68.807,63.805,80,50,80z M86.5,41.993c-1.932,0-3.5-1.566-3.5-3.5c0-1.932,1.568-3.5,3.5-3.5,c1.934,0,3.5,1.568,3.5,3.5C90,40.427,88.433,41.993,86.5,41.993z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+
+        <div class="description" ng-if="result"  style="text-align:center;">
+            <img style="height: 425px; width: 425px; max-width: 100%;" src="{{result}}"><br>
+            <img width=40px; height=40px; ng-style="{'visibility': showSpinner ? 'visible' : 'hidden'}" src="assets/images/spinner.gif">
+            <p style="color:red; margin-top:0px" ng-if="errorMessage">{{errorMessage}}</p>
+        </div>
+
+        <div class="description" style="margin-top: 5px;">
+            <p style="margin-top:0px; margin-bottom:0px;">
+                <b>Pick a content and a style:</b>
+            </p>
+            <div class="row" style="margin:5px">
+                <div class="col-xs-8 col-lg-9 section">
+                    <span><i>content picture</i></span>
+                </div>
+                <div class="col-xs-4 col-lg-3 section">
+                    <span style="margin-left:10px"><i>style target</i></span>
+                </div>
+            </div>
+            <div class="row" style="margin:0px">
+                <div class="col-xs-8 col-lg-9 section" style="border-right: 2px black solid">
+                    <img class="col-xs-6 col-lg-4 image-tests" ng-click="updateImage(img.url)" ng-src="{{img.url}}" ng-repeat="img in content_images">
+                </div>
+                <div class="col-xs-4 col-lg-3 section">
+                    <div class="col-xs-12 col-lg-12 image-tests" ng-repeat="img in style_images">
+                        <img width="100%" ng-class="img.name == current_style ? 'selected-style' : ''" ng-click="selectStyle(img.name)" ng-src="{{img.url}}">
+                    </div>
+                </div>
+            </div>
+
+            <p>
+                <b>What is this?</b>
+            </p>
+                <p><b>Neural Style Transfer</b> is the process of taking the content of one image and fusing it with the style of another, for example famous grand masters paintings.
+                    The demo seen here is trained on the <b>Image Transformation Network</b> proposed by <a href="https://arxiv.org/abs/1603.08155">Johnson et. al.</a> using <a href="https://github.com/apache/incubator-mxnet">MXNet</a>
+                    and deployed using <a href="https://aws.amazon.com/ecs/">Amazon Elastic Container Service</a>.
+                    The training code used is from the <a href="https://github.com/SineYuan/mxnet-fast-neural-style">mxnet-fast-neural-style</a> repository.</p>
+
+            <p>
+                <b>How does it work?</b>
+            </p>
+
+            <div style="text-align: center">
+                <img style="width: 100%" src="assets/images/model.png"/>
+                <p  style="text-align: center"><i>The Image Transformation Network proposed by Johnson et. al.</i></p>
+            </div>
+
+            <p>The Image Transformation Network for Neural Style Transfer is trained on a per style basis,
+                (i.e) train one model per style image that can be used to transfer the style to any input content image.
+                Figure 1 gives a brief overview of the Image Transformation Network training procedure.
+            </p>
+
+            <p>
+                <b>It's all about the losses</b>
+            </p>
+
+            <div style="text-align: center">
+                <img src="assets/images/eq1.png"/>
+                <p  style="text-align: center"><i>Equation 1: <a href="https://arxiv.org/abs/1608.01041">Feature reconstruction loss</a></i><p>
+            </div>
+
+            <p> The goal is to learn weights for the image transformation network based on the feature reconstruction loss and the style reconstruction loss.
+                The <b>Feature reconstruction loss</b> penalizes the Image Transformation Network for the features of the
+                output image y<sup>^</sup> deviating from the features of the input (the content image x), at particular layers of the VGG net.
+                The feature reconstruction loss is presented in Equation 1.</p>
+
+            <p>
+                The <b>Style reconstruction loss</b> is the squared Frobenius norm of the difference between the Gram matrices of the output and target style images. It is described in Equation 2.
+                At high level, the style reconstruction loss penalizes the Image  transformation network for the features of the generated image deviating from the features of the style image.
+            </p>
+
+            <div style="text-align:center">
+                <img src="assets/images/eq2.png"/>
+                <p  style="text-align: center"><i>Equation 2: Style reconstruction loss</i><p>
+            </div>
+
+
+            <p><i>Note</i>: More information about the use of Gram matrices for style reconstruction loss can be found in <a href="https://arxiv.org/abs/1701.01036">Demystifying Neural Style Transfer</a>.
+
+                To train the model end to end, the loss functions are combined as shown in Equation 3.
+                It is the weighted sum of the feature reconstruction loss and the style reconstruction loss and other simpler loss functions such as the per pixel loss and the total variation regularization.
+            </p>
+
+            <div style="text-align:center">
+                <img src="assets/images/eq3.png"/>
+                <p  style="text-align: center"><i>Equation 3: Perceptual losses for neural style transfer</i><p>
+            </div>
+
+
+            <p>
+                <b>Resources</b>
+            </p>
+            <ul>
+                <li>
+                    <a href="https://github.com/SineYuan/mxnet-fast-neural-style">Training code for fast neural style transfer</a>
+                </li>
+                <li>
+                    <a href="https://arxiv.org/abs/1603.08155 ">Perceptual Losses for Real-Time Style Transfer and Super-Resolution</a>
+                </li>
+                <li>
+                    <a href="https://github.com/apache/incubator-mxnet">MXNet Github Repo</a>
+                </li>
+                <li>
+                    <a href="https://github.com/awslabs/mxnet-model-server/tree/master/docker">Configuring Docker container for MMS</a>
+                </li>
+                <li>
+                    <a href="https://github.com/awslabs/mxnet-model-server/blob/master/docs/mms_on_fargate.md">Serverless Inference with MMS on Fargate</a>
+                </li>
+                <li>
+                    <a href="https://medium.com/apache-mxnet/mxnet-gluon-in-60-minutes-3d49eccaf266">MXNet Gluon 60 minutes crash course:</a> Get started with MXNet Gluon in this 60 minutes crash
+                    course
+                </li>
+                <li>
+                    Icons made by
+                    <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by
+                    <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+                        target="_blank">CC 3.0 BY</a>
+                </li>
+
+            </ul>
+            <p>
+                <b>Acknowledgement</b>
+            </p>
+            <ul>
+                <li>Demo based on <a href="https://github.com/codewithsk">SK</a>'s <a href="https://s3.amazonaws.com/nst.mxnet-demos.ai/index.html">work</a></li>
+            </ul>
+            <p>
+                <b>Questions?</b>
+            </p>
+            <ul>
+                <li>Create an issue on the
+                    <a href="https://github.com/ThomasDelteil/NeuralStyleTransfer_MXNet">demo github repo</a>
+                </li>
+                <li>Reach out on
+                    <a href="https://twitter.com/thdelteil/">twitter</a>,
+                    <a href="https://www.linkedin.com/in/thomasdelteil/">linkedin</a> or
+                    <a href="https://github.com/ThomasDelteil">github</a>
+                </li>
+            </ul>
+
+            <a style="float: right; margin-right: 10px;" href="https://github.com/thomasdelteil">
+                <img src="https://avatars2.githubusercontent.com/u/3716307?s=460&amp;v=4" style="border-radius:50%; margin: 20px"
+                    width="50px" height="50px">Demo built by Thomas Delteil</a>
+        </div>
+    </div>
+</body>
+
+</html>
